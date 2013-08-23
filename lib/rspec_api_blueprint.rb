@@ -22,25 +22,40 @@ RSpec.configure do |config|
       file_name = $1.underscore
 
       File.open(File.join(Rails.root, "/docs/#{file_name}.txt"), 'a') do |f|
-        f.write "# #{action} \n\n"
 
+        # Resource & Action
+        f.write "# #{action}\n\n"
+
+        # Request
         request_body = request.body.read
+        if request_body.present? or request.headers['Authorization']
+          f.write "+ Request (application/json)\n\n"
+  
+          authorizationHeader = request.headers['Authorization']
 
-        if request.headers['Authorization']
-          f.write "+ Request Headers \n\n"
-          f.write "Authorization: #{request.headers['Authorization']} \n\n".indent(4)
+          # Request Headers
+          if authorizationHeader
+            f.write "+ Headers\n\n".indent(4)
+            f.write "Authorization: #{authorizationHeader}\n\n".indent(12)
+          end
+
+          # Request Body
+          if request_body.present?
+            if authorizationHeader
+              f.write "+ Body\n\n".indent(4)
+            end
+
+            f.write "#{JSON.pretty_generate(JSON.parse(request_body))}\n\n".indent(authorizationHeader ? 12 : 8)
+          end
+
         end
 
-        if request_body.present?
-          f.write "+ Request (application/json) \n\n"
-          f.write "#{JSON.pretty_generate(JSON.parse(request_body))} \n\n".indent(4)
-        end
-
-        f.write "+ Response #{response.status} (application/json) \n\n"
-
+        # Response
+        f.write "+ Response #{response.status} (application/json)\n\n"
         if response.body.present?
-          f.write "#{JSON.pretty_generate(JSON.parse(response.body))} \n\n".indent(4)
+          f.write "#{JSON.pretty_generate(JSON.parse(response.body))}\n\n".indent(8)
         end
+
       end unless response.status == 401 || response.status == 403 || response.status == 301
     end
   end
