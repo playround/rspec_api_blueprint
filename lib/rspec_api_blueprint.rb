@@ -32,7 +32,7 @@ RSpec.configure do |config|
           authorizationHeader = request.headers['Authorization']
           if authorizationHeader
             f.write "+ Headers\n\n".indent(4)
-            f.write "Authorization: #{authorizationHeader}\n\n".indent(8)
+            f.write "Authorization: #{authorizationHeader}\n\n".indent(12)
           end
 
           if request_body.present?
@@ -40,7 +40,7 @@ RSpec.configure do |config|
               f.write "+ Body\n\n".indent(4)
             end
 
-            f.write "#{JSON.pretty_generate(JSON.parse(request_body))} \n\n".indent(authorizationHeader ? 8 : 4)
+            f.write "#{JSON.pretty_generate(JSON.parse(request_body))} \n\n".indent(authorizationHeader ? 12 : 8)
           end
 
         end
@@ -48,7 +48,7 @@ RSpec.configure do |config|
         f.write "+ Response #{response.status} (application/json) \n\n"
 
         if response.body.present?
-          f.write "#{JSON.pretty_generate(JSON.parse(response.body))} \n\n".indent(4)
+          f.write "#{JSON.pretty_generate(JSON.parse(response.body))} \n\n".indent(8)
         end
       end unless response.status == 401 || response.status == 403 || response.status == 301
     end
