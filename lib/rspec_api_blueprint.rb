@@ -26,14 +26,23 @@ RSpec.configure do |config|
 
         request_body = request.body.read
 
-        if request.headers['Authorization']
-          f.write "+ Request Headers \n\n"
-          f.write "Authorization: #{request.headers['Authorization']} \n\n".indent(4)
-        end
+        if request_body.present? or request.headers['Authorization']
+          f.write "+ Request (application/json)\n\n"
+  
+          authorizationHeader = request.headers['Authorization']
+          if authorizationHeader
+            f.write "+ Headers\n\n".indent(4)
+            f.write "Authorization: #{authorizationHeader}\n\n".indent(8)
+          end
 
-        if request_body.present?
-          f.write "+ Request (application/json) \n\n"
-          f.write "#{JSON.pretty_generate(JSON.parse(request_body))} \n\n".indent(4)
+          if request_body.present?
+            if authorizationHeader
+              f.write "+ Body\n\n".indent(4)
+            end
+
+            f.write "#{JSON.pretty_generate(JSON.parse(request_body))} \n\n".indent(authorizationHeader ? 8 : 4)
+          end
+
         end
 
         f.write "+ Response #{response.status} (application/json) \n\n"
