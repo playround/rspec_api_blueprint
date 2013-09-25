@@ -58,7 +58,6 @@ The output:
           }
         }
 
-
 ## Caveats
 
 401, 403 and 301 statuses are ignored since rspec produces a undesired output.
