@@ -162,7 +162,11 @@ Configuration options:
   config.api_docs_models = ->(resource) { "./app/models/#{resource}.rb" }
   ```
 
-- `config.api_docs_whitelist` -- by default, docs for all examples will be generated. If you want to only generate docs for selected examples, set `api_docs_whitelist = true` and then add `it "...", docs: true do ... end` to each example.
+- `config.api_docs_whitelist` -- by default, docs for all examples (that is, defined by `example`, `specify`, `it` and all other [aliases](http://rubydoc.info/gems/rspec-core/RSpec/Core/ExampleGroup.alias_example_to)) will be generated.
+
+  If you want to only generate docs for some examples, set `config.api_docs_example_only = true` and then define examples as `example "...", docs: true do ... end`. Examples defined with `docs: false` will never be documented, regardless of the whitelist property.
+
+  You can use an alias method `docs` as a shortcut for docs-enabled examples: `docs "..." do ... end`.
 
 - If you want to ensure the order of requests in the generated docs, set `config.order = 'default'` (or run as `rspec --order default`).
 

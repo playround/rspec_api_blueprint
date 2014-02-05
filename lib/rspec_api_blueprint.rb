@@ -7,6 +7,7 @@ RSpec.configure do |config|
   config.add_setting :api_docs_controllers, default: 'app/controllers'
   config.add_setting :api_docs_models, default: 'app/models'
   config.add_setting :api_docs_whitelist, default: false
+  config.alias_example_to :docs, docs: true
 
   api_docs_folder_path = nil
   touched_files = {}
