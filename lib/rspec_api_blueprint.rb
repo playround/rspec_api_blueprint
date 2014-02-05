@@ -1,3 +1,4 @@
+require "rspec/rails"
 require "rspec_api_blueprint/version"
 require "rspec_api_blueprint/string_extensions"
 
@@ -29,8 +30,8 @@ RSpec.configure do |config|
     next if example.metadata[:docs] == false
     next if config.api_docs_whitelist && !example.metadata[:docs]
 
-    response ||= last_response
-    request ||= last_request
+    response ||= last_response || @response
+    request ||= last_request || @request
 
     next unless response
 
