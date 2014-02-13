@@ -127,13 +127,13 @@ RSpec.configure do |config|
   def parse_action_comment(example_group, folder)
     return nil unless example_group
 
-    folder = folder.call(example_group[:file_path]) if folder.is_a? Proc
-    file_name = example_group[:file_path].match(/([a-zA-Z_-]+)_spec\.rb/)[1]
+    resource = example_group[:file_path].match(/([a-zA-Z_-]+)_spec\.rb/)[1].singularize
+    file_path = folder.is_a?(Proc) ? folder.call(resource) : File.join(folder, resource.pluralize + '_controller.rb')
 
     in_comment = false
     comment_lines = []
 
-    File.open(File.join(folder, file_name.pluralize.underscore + '_controller.rb'), 'r').each do |line|
+    File.open(file_path, 'r').each do |line|
       if in_comment
         if line =~ /\s*# ?(.*)$/
           comment_lines << $1
@@ -155,14 +155,14 @@ RSpec.configure do |config|
   def parse_resource_comment(example_group, folder)
     return nil unless example_group
 
-    folder = folder.call(example_group[:file_path]) if folder.is_a? Proc
-    file_name = example_group[:file_path].match(/([a-zA-Z_-]+)_spec\.rb/)[1]
+    resource = example_group[:file_path].match(/([a-zA-Z_-]+)_spec\.rb/)[1].singularize
+    file_path = folder.is_a?(Proc) ? folder.call(resource) : File.join(folder, resource + '.rb')
 
-    lines = File.read(File.join(folder, file_name.singularize.underscore + '.rb')).lines.to_a
+    lines = File.read(file_path).lines.to_a
     row = 0
 
     while row < lines.size
-      if lines[row].include?("class " + file_name.singularize.camelize)
+      if lines[row].match(/^\s*class \w+/)  # find first class definition
         row -= 1
         break
       else
@@ -171,7 +171,7 @@ RSpec.configure do |config|
     end
 
     if row == lines.size
-      puts "Cannot find docs for resource #{file_name.singularize.camelize}"
+      puts "Cannot find docs for resource #{resource.camelize}"
       return nil
     end
 
