@@ -4,6 +4,7 @@ require "rspec_api_blueprint/string_extensions"
 
 
 RSpec.configure do |config|
+  config.treat_symbols_as_metadata_keys_with_true_values = true
   config.add_setting :api_docs_output, default: 'api_docs'
   config.add_setting :api_docs_controllers, default: 'app/controllers'
   config.add_setting :api_docs_models, default: 'app/models'
