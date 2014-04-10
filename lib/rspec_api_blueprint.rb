@@ -25,7 +25,7 @@ RSpec.configure do |config|
   RESOURCE_GROUP = /Group\s(\w+)/
   ACTION_GROUP = /(GET|POST|PATCH|PUT|DELETE)\s(.+)$/
 
-  config.after(:each, type: :request) do
+  config.after(:each) do
     next if example.metadata[:docs] == false
     next if config.api_docs_whitelist && !example.metadata[:docs]
 
@@ -87,8 +87,8 @@ RSpec.configure do |config|
 
         # Request Headers
         if authorization_header.present?
-          f.puts "+ Headers\n"
-          f.puts "Authorization: #{request_authorization_header}\n\n".indent(2)
+          f.puts "+ Headers\n\n"
+          f.puts "Authorization: #{authorization_header}\n\n".indent(2)
         end
 
         # Request Body
@@ -160,25 +160,43 @@ RSpec.configure do |config|
     lines = File.read(file_path).lines.to_a
     row = 0
 
-    while row < lines.size
-      if lines[row].match(/^\s*class \w+/)  # find first class definition
-        row -= 1
-        break
-      else
-        row += 1
+    in_comment = false
+    comment_lines = []
+
+    File.open(file_path, 'r').each do |line|
+      if in_comment
+        if line =~ /\s*# ?#* ?(.*)$/
+          comment_lines << $1
+        else
+          comment_lines << ""
+          break
+        end
+      elsif line =~ Regexp.new("\s*#\s*" + Regexp.escape(example_group[:description_args].first) + "\s*$")
+        in_comment = true
       end
     end
 
-    if row == lines.size
-      puts "Cannot find docs for resource #{resource.camelize}"
-      return nil
-    end
+    if comment_lines.size == 0
+      while row < lines.size
+        if lines[row].match(/^\s*class \w+/)  # find first class definition
+          row -= 1
+          break
+        else
+          row += 1
+        end
+      end
 
-    comment_lines = [""]
+      if row == lines.size
+        puts "Cannot find docs for resource #{resource.camelize}"
+        return nil
+      end
 
-    while lines[row] =~ /\s*# ?(.*)$/
-      comment_lines.unshift($1)
-      row -= 1
+      comment_lines = [""]
+
+      while lines[row] =~ /\s*# ?(.*)$/
+        comment_lines.unshift($1)
+        row -= 1
+      end
     end
 
     comment_lines
