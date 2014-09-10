@@ -3,7 +3,8 @@ require "rspec_api_blueprint/string_extensions"
 
 
 RSpec.configure do |config|
-  config.before(:suite) do
+  
+  config.before(:suite) do |example|
     if defined? Rails
       api_docs_folder_path = File.join(Rails.root, '/api_docs/')
     else
@@ -17,7 +18,7 @@ RSpec.configure do |config|
     end
   end
 
-  config.after(:each, type: :request) do
+  config.after(:each, type: :request) do |example|
     response ||= last_response
     request ||= last_request
 
