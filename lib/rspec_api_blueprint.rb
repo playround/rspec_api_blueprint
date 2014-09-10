@@ -3,7 +3,6 @@ require "rspec_api_blueprint/string_extensions"
 
 
 RSpec.configure do |config|
-  # config.include Rack::Test::Methods, type: :request
   
   config.before(:suite) do |example|
     if defined? Rails
