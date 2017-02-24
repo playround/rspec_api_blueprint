@@ -17,7 +17,7 @@ RSpec.configure do |config|
     end
   end
 
-  config.after(:each, type: :request) do
+  config.after(:each, type: :request) do |example|
     response ||= last_response
     request ||= last_request
 
@@ -32,7 +32,8 @@ RSpec.configure do |config|
 
       action = example_groups[-2][:description_args].first if example_groups[-2]
       example_groups[-1][:description_args].first.match(/(\w+)\sRequests/)
-      file_name = $1.underscore
+      path = example.metadata[:example_group][:file_path]
+      file_name = File.basename(path).underscore
 
       if defined? Rails
         file = File.join(Rails.root, "/api_docs/#{file_name}.txt")
