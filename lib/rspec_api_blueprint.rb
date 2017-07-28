@@ -17,10 +17,7 @@ RSpec.configure do |config|
     end
   end
 
-  config.after(:each, type: :request) do
-    response ||= last_response
-    request ||= last_request
-
+  config.after(:each, type: :request) do |example|
     if response
       example_group = example.metadata[:example_group]
       example_groups = []
