@@ -29,6 +29,10 @@ Write tests using the following convention:
 - Tests must be placed in `spec/requests` folder or they have to be tagged with `type: :request`
 - Top level descriptions are named after the model (plural form) followed by the word “Requests”. For a example model called Arena it would be “Arenas Requests”.
 - Second level descriptions are actions in the form of “VERB path”. For the show action of the Arenas controller it would be “GET /arenas/{id}”.
+- Run your specs as normal and files named after the plural form of the model will
+ be created in a folder at the root directory of your project named
+'/api_docs'. The documentation for Arenas would be at
+`<project_root>/api_docs/arenas.txt`
 
 Example:
 
