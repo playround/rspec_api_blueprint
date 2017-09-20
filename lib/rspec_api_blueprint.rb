@@ -1,6 +1,8 @@
 require "rspec_api_blueprint/version"
 require "rspec_api_blueprint/string_extensions"
 
+require "active_support/all"
+
 
 RSpec.configure do |config|
   config.before(:suite) do
@@ -17,7 +19,7 @@ RSpec.configure do |config|
     end
   end
 
-  config.after(:each, type: :request) do
+  config.after(:each, type: :request) do |example|
     response ||= last_response
     request ||= last_request
 
@@ -27,7 +29,7 @@ RSpec.configure do |config|
 
       while example_group
         example_groups << example_group
-        example_group = example_group[:example_group]
+        example_group = example_group[:parent_example_group]
       end
 
       action = example_groups[-2][:description_args].first if example_groups[-2]
@@ -46,6 +48,9 @@ RSpec.configure do |config|
 
         # Request
         request_body = request.body.read
+        if !request_body.present?
+          request_body = request.params.to_json
+        end
         authorization_header = request.env ? request.env['Authorization'] : request.headers['Authorization']
 
         if request_body.present? || authorization_header.present?
